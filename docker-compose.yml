@@ -1,0 +1,26 @@
+version: '3'
+services:
+  eclipse-mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: eclipse-mosquitto-server
+    ports:
+      - 1883:1883
+    networks:
+      - MQTT_network
+
+  ewpe-smart-mqtt:
+    container_name: ewpe-smart-mqtt
+    build:
+      context: .
+      dockerfile: infra/node-server.Dockerfile
+    networks:
+      - MQTT_network
+    environment:
+      - MQTT_SERVER=mqtt://eclipse-mosquitto
+      - MQTT_BASE_TOPIC=ewpe-smart
+      - NETWORK=192.168.1.255
+      - DEVICE_POLL_INTERVAL=5000
+
+networks:
+  MQTT_network:
+    driver: bridge
